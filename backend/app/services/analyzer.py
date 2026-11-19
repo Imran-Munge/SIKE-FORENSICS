@@ -6,15 +6,18 @@ import numpy as np
 from .provenance import inspect_provenance
 from .media import video_info, audio_info
 from .evidence import fuse_signals
-
-
-def detector_plan(kind):
-    return {"image":[{"name":"commfor","role":"AI-generated image detector","license_gate":"required"},{"name":"rine","role":"AI-generated image detector","license_gate":"required"},{"name":"safe","role":"lightweight image detector","license_gate":"required"},{"name":"classical","role":"ELA/noise/frequency/copy-move","license_gate":"open-source"}],"video":[{"name":"gend","role":"temporal/face deepfake detector","license_gate":"required"},{"name":"dfdet-clip","role":"video deepfake detector","license_gate":"required"},{"name":"syncnet","role":"audio-video synchronization","license_gate":"required"}],"audio":[{"name":"aasist","role":"synthetic speech/spoof detector","license_gate":"required"},{"name":"nes2net-x-itw","role":"real-world speech anti-spoofing","license_gate":"required"}]}.get(kind,[])
 from .analysis_pipeline import image_signal_bundle, explain_signals
 
 IMAGE_EXT={".jpg",".jpeg",".png",".webp",".tif",".tiff",".bmp"}
 VIDEO_EXT={".mp4",".mov",".avi",".mkv",".webm"}
 AUDIO_EXT={".wav",".mp3",".m4a",".flac",".ogg",".aac"}
+
+def detector_plan(kind):
+    return {
+      "image":[{"name":"commfor","role":"AI-generated image detector"},{"name":"rine","role":"AI-generated image detector"},{"name":"safe","role":"lightweight image detector"},{"name":"classical","role":"ELA/noise/frequency/copy-move"}],
+      "video":[{"name":"gend","role":"temporal/face deepfake detector"},{"name":"dfdet-clip","role":"video deepfake detector"},{"name":"syncnet","role":"audio-video synchronization"}],
+      "audio":[{"name":"aasist","role":"synthetic speech/spoof detector"},{"name":"nes2net-x-itw","role":"real-world speech anti-spoofing"}]
+    }.get(kind,[])
 
 def sha256(b): return hashlib.sha256(b).hexdigest()
 
@@ -43,16 +46,26 @@ def analyze_media(filename, content_type, raw):
        "size_bytes":len(raw),"sha256":sha256(raw),"analyzed_at":datetime.now(timezone.utc).isoformat(),
        "signals":{},"verdict":"INCONCLUSIVE","confidence":0.0,"limitations":[]}
     r["signals"]["entropy"]=entropy(raw[:2_000_000])
-    r["signals"]["provenance"]=inspect_provenance(raw)\n    r["signals"]["detector_plan"]=detector_plan(kind)
-    if kind=="image":\n        r["signals"]["image"]=image_forensics(raw)\n        try:\n            r["signals"]["classical"]=image_signal_bundle(raw)\n            r["signals"]["analysis_notes"]=explain_signals(r["signals"]["classical"])\n        except Exception as e:\n            r["limitations"].append("Classical image analysis failed: "+str(e))
+    r["signals"]["provenance"]=inspect_provenance(raw)
+    r["signals"]["detector_plan"]=detector_plan(kind)
+    if kind=="image":
+        r["signals"]["image"]=image_forensics(raw)
+        try:
+            r["signals"]["classical"]=image_signal_bundle(raw)
+            r["signals"]["analysis_notes"]=explain_signals(r["signals"]["classical"])
+        except Exception as e:
+            r["limitations"].append("Classical image analysis failed: "+str(e))
+        r["limitations"].append("AI detector inference runs through the optional licensed worker.")
     elif kind=="video":
         try: r["signals"]["video"]=video_info(raw)
         except Exception as e: r["signals"]["video"]={"error":str(e)}
-        r["limitations"].append("AI deepfake and temporal model inference is a planned worker.")
+        r["limitations"].append("AI deepfake, temporal and A/V-sync inference runs through the optional licensed worker.")
     elif kind=="audio":
         try: r["signals"]["audio"]=audio_info(filename,raw)
         except Exception as e: r["signals"]["audio"]={"error":str(e)}
-        r["limitations"].append("Synthetic-voice model inference is a planned worker.")
-    else: r["limitations"].append("Unsupported media type.")
-    fused=fuse_signals(r); r["verdict"]=fused["verdict"]; r["confidence"]=fused["score"]; r["signals"]["evidence_fusion"]=fused
+        r["limitations"].append("Synthetic-voice inference runs through the optional licensed worker.")
+    else:
+        r["limitations"].append("Unsupported media type.")
+    fused=fuse_signals(r)
+    r["verdict"]=fused["verdict"]; r["confidence"]=fused["score"]; r["signals"]["evidence_fusion"]=fused
     return r
