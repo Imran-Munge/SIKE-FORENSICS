@@ -6,6 +6,7 @@ import numpy as np
 from .provenance import inspect_provenance
 from .media import video_info, audio_info
 from .evidence import fuse_signals
+from .analysis_pipeline import image_signal_bundle, explain_signals
 
 IMAGE_EXT={".jpg",".jpeg",".png",".webp",".tif",".tiff",".bmp"}
 VIDEO_EXT={".mp4",".mov",".avi",".mkv",".webm"}
@@ -39,7 +40,7 @@ def analyze_media(filename, content_type, raw):
        "signals":{},"verdict":"INCONCLUSIVE","confidence":0.0,"limitations":[]}
     r["signals"]["entropy"]=entropy(raw[:2_000_000])
     r["signals"]["provenance"]=inspect_provenance(raw)
-    if kind=="image": r["signals"]["image"]=image_forensics(raw)
+    if kind=="image":\n        r["signals"]["image"]=image_forensics(raw)\n        try:\n            r["signals"]["classical"]=image_signal_bundle(raw)\n            r["signals"]["analysis_notes"]=explain_signals(r["signals"]["classical"])\n        except Exception as e:\n            r["limitations"].append("Classical image analysis failed: "+str(e))
     elif kind=="video":
         try: r["signals"]["video"]=video_info(raw)
         except Exception as e: r["signals"]["video"]={"error":str(e)}
