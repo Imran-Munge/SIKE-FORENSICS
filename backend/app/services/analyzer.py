@@ -6,6 +6,10 @@ import numpy as np
 from .provenance import inspect_provenance
 from .media import video_info, audio_info
 from .evidence import fuse_signals
+
+
+def detector_plan(kind):
+    return {"image":[{"name":"commfor","role":"AI-generated image detector","license_gate":"required"},{"name":"rine","role":"AI-generated image detector","license_gate":"required"},{"name":"safe","role":"lightweight image detector","license_gate":"required"},{"name":"classical","role":"ELA/noise/frequency/copy-move","license_gate":"open-source"}],"video":[{"name":"gend","role":"temporal/face deepfake detector","license_gate":"required"},{"name":"dfdet-clip","role":"video deepfake detector","license_gate":"required"},{"name":"syncnet","role":"audio-video synchronization","license_gate":"required"}],"audio":[{"name":"aasist","role":"synthetic speech/spoof detector","license_gate":"required"},{"name":"nes2net-x-itw","role":"real-world speech anti-spoofing","license_gate":"required"}]}.get(kind,[])
 from .analysis_pipeline import image_signal_bundle, explain_signals
 
 IMAGE_EXT={".jpg",".jpeg",".png",".webp",".tif",".tiff",".bmp"}
@@ -39,7 +43,7 @@ def analyze_media(filename, content_type, raw):
        "size_bytes":len(raw),"sha256":sha256(raw),"analyzed_at":datetime.now(timezone.utc).isoformat(),
        "signals":{},"verdict":"INCONCLUSIVE","confidence":0.0,"limitations":[]}
     r["signals"]["entropy"]=entropy(raw[:2_000_000])
-    r["signals"]["provenance"]=inspect_provenance(raw)
+    r["signals"]["provenance"]=inspect_provenance(raw)\n    r["signals"]["detector_plan"]=detector_plan(kind)
     if kind=="image":\n        r["signals"]["image"]=image_forensics(raw)\n        try:\n            r["signals"]["classical"]=image_signal_bundle(raw)\n            r["signals"]["analysis_notes"]=explain_signals(r["signals"]["classical"])\n        except Exception as e:\n            r["limitations"].append("Classical image analysis failed: "+str(e))
     elif kind=="video":
         try: r["signals"]["video"]=video_info(raw)
