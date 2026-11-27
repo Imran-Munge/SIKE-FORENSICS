@@ -11,15 +11,15 @@ def fuse_signals(analysis):
         evidence.append(_item("recompression",v,"ELA","medium","Elevated recompression error can indicate editing, but also occurs in normal image pipelines."))
         score+=v
     if s.get("provenance",{}).get("c2pa_marker_detected"):
-        evidence.append(_item("content_credentials_marker",0,"C2PA marker","high","A marker was detected; cryptographic provenance verification is still required."))
+        evidence.append(_item("content_credentials_marker",0,"C2PA marker","informational","A marker was detected; cryptographic provenance verification is still required."))
     detector=s.get("detectors",{})
-    for d in detector.get("results",[]):
+    for d in detector.get("results",[]) if isinstance(detector,dict) else []:
         if isinstance(d,dict) and isinstance(d.get("score"),(int,float)):
-            ds=float(d["score"]); score=max(score,ds)
-            evidence.append(_item("ai_detector",ds,"licensed detector","medium","Model output is an indicator, not proof.",d.get("model") or d.get("model_id")))
+            ds=max(0,min(1,float(d["score"])))
+            evidence.append(_item("ai_detector",ds,"licensed detector","model-dependent","Model output is an indicator, not proof.",d.get("model") or d.get("model_id")))
+            score=max(score,ds)
     score=min(max(score,0),0.99)
-    verdict="SUSPICIOUS" if score>=0.65 else "INCONCLUSIVE"
-    if score>=0.85: verdict="HIGH_RISK_INDICATOR"
+    verdict="HIGH_RISK_INDICATOR" if score>=0.85 else "SUSPICIOUS" if score>=0.65 else "INCONCLUSIVE"
     band="low" if score<0.35 else "medium" if score<0.65 else "high"
     return {"score":round(score,3),"verdict":verdict,"confidence_band":band,"evidence":evidence,
             "reasons":[e["explanation"] for e in evidence],"method":"multi-signal, non-conclusive fusion"}
