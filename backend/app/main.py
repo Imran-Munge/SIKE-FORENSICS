@@ -1,7 +1,7 @@
 from pathlib import Path
 import hashlib
 from fastapi import FastAPI,File,UploadFile,HTTPException
-from fastapi.responses import JSONResponse,HTMLResponse,Response
+from fastapi.responses import JSONResponse,HTMLResponse,Response\nfrom fastapi.middleware.cors import CORSMiddleware\nimport os
 from .services.analyzer import analyze_media
 from .services.report import build_report
 from .services.report_html import render_report
@@ -11,7 +11,7 @@ from .services.removal import build_removal_request
 from .services.file_validation import validate_upload
 from .services.case_store import save_case,load_case
 
-app=FastAPI(title="SIKE FORENSICS API",version="1.0.0")
+app=FastAPI(title="SIKE FORENSICS API",version="1.0.0")\norigins=[x.strip() for x in os.getenv("SIKE_CORS_ORIGINS","http://localhost:3000").split(",") if x.strip()]\napp.add_middleware(CORSMiddleware,allow_origins=origins,allow_credentials=True,allow_methods=["*"],allow_headers=["*"])
 DATA=Path("data");DATA.mkdir(exist_ok=True)
 MAX_BYTES=250*1024*1024
 
