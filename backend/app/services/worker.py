@@ -1,15 +1,12 @@
-import os, tempfile
-from pathlib import Path
+import os
 from .detector_adapter import run_forensix
 
-def run_optional_detectors(kind, filename, raw, model_names):
-    enabled=os.getenv("SIKE_ENABLE_AI_WORKERS","0")=="1"
-    if not enabled:
-        return {"status":"disabled","models":model_names,"results":[],"reason":"Set SIKE_ENABLE_AI_WORKERS=1 only after installing and licensing the selected models."}
-    suffix=Path(filename).suffix or ".bin"
-    with tempfile.NamedTemporaryFile(delete=False,suffix=suffix) as f:
-        f.write(raw); path=f.name
-    try:
-        return run_forensix(path, model_names)
-    finally:
-        Path(path).unlink(missing_ok=True)
+ENABLED=os.getenv("SIKE_ENABLE_FORENSIX","0")=="1"
+
+def run_detectors(path, modality, models):
+    requested=[m["name"] for m in models if m.get("enabled", True) and m.get("commercial_ok", False)]
+    if not requested:
+        return {"status":"disabled","modality":modality,"results":[],"message":"No production-enabled licensed detector is configured."}
+    if modality=="image" and ENABLED:
+        return {"status":"ok","modality":modality,"results":run_forensix(path, requested)}
+    return {"status":"planned","modality":modality,"results":[],"message":"Detector worker is not enabled for this modality in the current deployment."}
