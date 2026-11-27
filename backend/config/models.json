@@ -1,14 +1,14 @@
 {
-  "version": 1,
-  "policy": "Only models marked commercial_ok=true may be enabled in production.",
+  "version": 2,
+  "policy": "Only models with independently verified commercial rights may be enabled in production.",
   "models": [
-    {"id":"commfor","modality":"image","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"rine","modality":"image","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"safe","modality":"image","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"gend","modality":"video","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"dfdet-clip","modality":"video","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"syncnet","modality":"video","commercial_ok":true,"enabled":false,"license":"see upstream model registry"},
-    {"id":"aasist","modality":"audio","commercial_ok":true,"enabled":false,"license":"MIT"},
-    {"id":"nes2net-x-itw","modality":"audio","commercial_ok":true,"enabled":false,"license":"Apache-2.0"}
+    {"id":"commfor","modality":"image","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and dataset terms"},
+    {"id":"rine","modality":"image","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and dataset terms"},
+    {"id":"safe","modality":"image","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and dataset terms"},
+    {"id":"gend","modality":"video","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and dataset terms"},
+    {"id":"dfdet-clip","modality":"video","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and dataset terms"},
+    {"id":"syncnet","modality":"video","commercial_ok":false,"enabled":false,"license":"verify exact code, weights and intended-use terms"},
+    {"id":"aasist","modality":"audio","commercial_ok":false,"enabled":false,"license":"verify exact weights and intended use"},
+    {"id":"nes2net-x-itw","modality":"audio","commercial_ok":false,"enabled":false,"license":"verify exact weights and intended use"}
   ]
 }
