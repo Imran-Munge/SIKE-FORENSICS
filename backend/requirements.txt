@@ -5,4 +5,3 @@ pillow>=10.4
 numpy>=2.0
 opencv-python-headless>=4.10
 mutagen>=1.47
-python-magic>=0.4.27
