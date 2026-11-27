@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-def build_report(a):
-    return {"report_id":"report-"+a["case_id"][5:],"generated_at":datetime.now(timezone.utc).isoformat(),
-            "assessment":{"verdict":a["verdict"],"confidence":a["confidence"],
-            "warning":"Automated indicators are not proof."},"evidence":a}
+from datetime import datetime,timezone
+def build_report(result):
+    return {"report_version":"1.0","generated_at":datetime.now(timezone.utc).isoformat(),"case_id":result["case_id"],"assessment":{"verdict":result["verdict"],"confidence":result["confidence"]},"evidence_hash":{"algorithm":"SHA-256","value":result["sha256"]},"media":{"filename":result["filename"],"type":result["media_type"],"size_bytes":result["size_bytes"]},"signals":result["signals"],"limitations":result["limitations"],"notice":"Forensic indicators are probabilistic and must be reviewed with the original evidence and relevant context."}
