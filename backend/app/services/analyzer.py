@@ -1,4 +1,4 @@
-import io,hashlib,json
+import io,hashlib
 from datetime import datetime,timezone
 from pathlib import Path
 from PIL import Image,ExifTags
@@ -13,7 +13,7 @@ VIDEO_EXT={".mp4",".mov",".avi",".mkv",".webm"}
 AUDIO_EXT={".wav",".mp3",".m4a",".flac",".ogg",".aac"}
 
 def detector_plan(kind):
-    return {"image":[{"name":"commfor","role":"AI-generated image detector","commercial_ok":True},{"name":"rine","role":"AI-generated image detector","commercial_ok":True},{"name":"safe","role":"lightweight image detector","commercial_ok":True},{"name":"classical","role":"ELA/noise/frequency/copy-move","commercial_ok":True}],
+    return {"image":[{"name":"commfor","role":"AI-generated image detector","commercial_ok":False},{"name":"rine","role":"AI-generated image detector","commercial_ok":True},{"name":"safe","role":"lightweight image detector","commercial_ok":True},{"name":"classical","role":"ELA/noise/frequency/copy-move","commercial_ok":True}],
     "video":[{"name":"gend","role":"temporal/face deepfake detector","commercial_ok":True},{"name":"dfdet-clip","role":"video deepfake detector","commercial_ok":True},{"name":"syncnet","role":"audio-video synchronization","commercial_ok":False}],
     "audio":[{"name":"aasist","role":"synthetic speech/spoof detector","commercial_ok":True},{"name":"nes2net-x-itw","role":"real-world speech anti-spoofing","commercial_ok":True}]}.get(kind,[])
 
