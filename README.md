@@ -17,7 +17,7 @@ SIKE FORENSICS is an evidence-first web workspace for investigating images, vide
 - Multi-signal evidence fusion with uncertainty bands.
 - Persistent JSON case records.
 - HTML case reports.
-- Downloadable evidence package containing the case record and package instructions.
+- Downloadable evidence package containing the case record and package instructions. The original media file is deliberately not embedded, so the source evidence remains under the investigator's control.
 - Metadata-cleaning endpoint that produces a derivative and reports original/cleaned hashes.
 - Structured removal-request workflow.
 - Responsive light investigation dashboard with tabs for Overview, Metadata, Provenance, AI Detection, Pixel Forensics, Video, Audio, Evidence, Reports, Evidence Package, Cleaning and Removal Request.
@@ -74,9 +74,9 @@ Do not enable a model merely because its repository contains the model. Check co
 
 - `GET /health`
 - `POST /api/v1/analyze`
-- `GET /api/v1/cases/{case_id}`
+- `GET /api/v1/cases`\n- `GET /api/v1/cases/{case_id}`
 - `GET /api/v1/cases/{case_id}/report.html`
-- `GET /api/v1/cases/{case_id}/package`
+- `GET /api/v1/cases/{case_id}/package`\n- `GET /api/v1/cases/{case_id}/removal-request`
 - `POST /api/v1/report`
 - `POST /api/v1/clean`
 - `POST /api/v1/removal-request`
